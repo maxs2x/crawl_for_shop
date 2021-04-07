@@ -5,13 +5,10 @@ from bs4 import BeautifulSoup
 from magistral.items import Product
 from scrapy.loader import ItemLoader
 
-
-
 product_item = Product()
 
-
 class MagistralSpider(scrapy.Spider):
-    name = 'magistral'
+    name = 'mst'
     allowed_domains = ['magistral-nn.ru']
 
 
@@ -44,17 +41,23 @@ class MagistralSpider(scrapy.Spider):
         print(text, total, page, end_text)
         item = Product()
         for row in json.loads(response.text)['rows']:
+            loader = ItemLoader(item=Product(), selector=row)
             cols = row['cell'][6]
             soupe = BeautifulSoup(cols, 'lxml')
-            reformat_description = self.sort_in_model(soupe.get_text())
-            item['description'] = reformat_description[1]
-            item['model_auto'] = reformat_description[0]
-            item['price'] = row['cell'][9]
-            item['producer'] = row['cell'][13]
-            yield item
+            reformat_description = soupe.get_text()
+            loader.add_value('title', reformat_description[-4:])
+            loader.add_value('price', row['cell'][9])
+            loader.add_value("balance", row['cell'][8])
+            loader.add_value('description', reformat_description)
+            loader.add_value('producer', row['cell'][13])
+            loader.add_value('model_auto', reformat_description[-7:-3])
+            loader.add_value('image', row['cell'][0])
+            loader.add_value('image_alt', 'img_hex')
+            loader.add_value('product_url', row['cell'][4])
+            yield loader.load_item()
         page += 1
         if int(page) < int(total):
-            yield scrapy.FormRequest(f'https://www.magistral-nn.ru/automag/?SECTION_ID=23483&getdata=true&nd=1616783290021&_search=true&nd=1616786082075&rows=50&page={page}&sidx=id&sord=asc&name=%D0%92%D0%90%D0%97',
-                                     callback=self.parse, method='GET')
-        else:
-            print('=========  KONEC  ================')
+            yield scrapy.FormRequest(
+                f'https://www.magistral-nn.ru/automag/?SECTION_ID=23483&getdata=true&nd=1616783290021&_search=true&nd=1616786082075&rows=50&page={page}&sidx=id&sord=asc&name=%D0%92%D0%90%D0%97',
+                callback=self.parse, method='GET')
+        print('=========  KONEC  ================')

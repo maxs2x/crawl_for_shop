@@ -10,17 +10,19 @@ from scrapy.item import Item, Field
 from scrapy.loader.processors import MapCompose
 
 
-class MagistralItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+def remove_quotes(text):
+    # strip the unicode comma
+    text = text.strip(u'\u002C')
+    return text
 
 
 class Product(Item):
     title = Field()
     price = Field()
     balance = Field()
-    description = Field()
+    description = Field(
+        input_processor=MapCompose(remove_quotes)
+        )
     producer = Field()
     model_auto = Field()
     navigation_categories = Field()

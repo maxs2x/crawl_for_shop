@@ -13,7 +13,7 @@ BOT_NAME = 'magistral'
 
 SPIDER_MODULES = ['magistral.spiders']
 NEWSPIDER_MODULE = 'magistral.spiders'
-
+CONNECTION_STRING = 'sqlite:///parse_products.db'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'magistral (+https://www.magistral-nn.ru/automag/)'
@@ -64,9 +64,10 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'magistral.pipelines.MagistralPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'magistral.pipelines.DuplicatesPipeline': 100,
+    'magistral.pipelines.SaveProductPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
