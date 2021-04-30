@@ -65,9 +65,13 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+    'magistral.pipelines.ImagesPipeline': 1,
     'magistral.pipelines.DuplicatesPipeline': 100,
     'magistral.pipelines.SaveProductPipeline': 300,
+    'magistral.pipelines.SaveImagePipeline': 300,
 }
+
+IMAGES_STORE = 'd://all_img'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

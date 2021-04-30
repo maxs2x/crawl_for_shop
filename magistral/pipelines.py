@@ -4,8 +4,12 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import scrapy
+import os
+from urllib.parse import urlparse
 from scrapy.exceptions import DropItem
 from sqlalchemy.orm import sessionmaker
+from scrapy.pipelines.images import ImagesPipeline
 from magistral.models import db_connect, create_table, Suspension
 
 
@@ -25,9 +29,10 @@ class SaveProductPipeline(object):
         suspension.description = item["description"][0]
         suspension.producer = item["producer"][0]
         suspension.model_auto = item["model_auto"][0]
-        suspension.image = item["image"][0]
+        suspension.images = item["images"][0]
         suspension.image_alt = item["image_alt"][0]
         suspension.product_url = item["product_url"][0]
+        suspension.navigation_categories = item["navigation_categories"][0]
 
         try:
             session.add(suspension)
@@ -62,3 +67,14 @@ class DuplicatesPipeline(object):
         else:
             return item
             session.close()
+
+
+class SaveImagePipeline(ImagesPipeline):
+
+    def get_media_requests(self, item, info):
+        for image_url in item['image_urls']:
+            yield scrapy.Request(image_url)
+
+    def file_path(self, request, response=None, info=None, *, item=None):
+        return 'files/' + os.path.basename(urlparse(request.url).path)
+

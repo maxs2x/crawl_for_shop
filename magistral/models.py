@@ -18,22 +18,7 @@ def create_table(engine):
 
 
 class Suspension(Base):
-    def __init__(self, id=None, title=None, description=None, price=None, balance=None, producer=None, model_auto=None, image=None, product_url = None, image_alt=None, imageurl=None):
-        self.id = id
-        self.title = title
-        self.price = price
-        self.balance = balance
-        self.description = description
-        self.producer = producer
-        self.model_auto = model_auto
-        self.image = image
-        self.image_alt = image_alt
-        self.product_url = product_url
-        self.image_url = imageurl
-
-
     __tablename__ = "suspension"
-
     id = Column(Integer, primary_key=True)
     title = Column('title', Text())
     price = Column('price', Text())
@@ -41,7 +26,21 @@ class Suspension(Base):
     description = Column('description', Text())
     producer = Column('producer', Text())
     model_auto = Column('model_auto', Text())
-    image = Column('image', Text())
+    #image = Column('image', Text())
     image_alt = Column('image_alt', Text())
     product_url = Column('product_url', Text())
+    navigation_categories = Column('navigation_categories', Text())
 
+    def __init__(self, id=None, title=None, description=None, price=None, balance=None, producer=None, model_auto=None, image=None, product_url = None, image_alt=None, imageurl=None, navigation_categories=None):
+        self.id = id
+        self.title = title
+        self.price = price
+        self.balance = balance
+        self.description = description
+        self.producer = producer
+        self.model_auto = model_auto
+        #self.image = image
+        self.image_alt = image_alt
+        self.product_url = product_url
+        self.image_url = imageurl
+        self.navigation_categories = navigation_categories
