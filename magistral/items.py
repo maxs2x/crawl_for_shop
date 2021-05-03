@@ -46,21 +46,25 @@ def database_distribution(categories):
     return categories_out
 
 
-
 def sort_from_model(text):
-    model = ['ВАЗ-2107', 'ВАЗ-2109', 'ВАЗ-2112', 'Калина', 'Приора', 'Нива', 'ВАЗ-2101', 'ВАЗ-2114']
-    all_model = ['ВАЗ-2101', 'ВАЗ-2105', 'ВАЗ-2121', 'ВАЗ-2106', 'ВАЗ-2107', 'ВАЗ-2108', 'ВАЗ-2109', 'ВАЗ-2112', 'ВАЗ-2113', 'Калина', 'Приора', 'Нива', 'ВАЗ-2114']
-    text_out_model = ''
-    for elem in all_model:
-
-        if elem in text:
-            text_out_model = text.replace(elem, '')
-            find_model = elem
-            return [find_model, text_out_model]
-        else:
-            find_model = None
-            text_out_model = text
-    return [find_model, text_out_model]
+    models = ['ВАЗ-2107', 'ВАЗ-2109', 'ВАЗ-2112', 'Калина', 'Приора', 'Нива', 'ВАЗ-2101', 'ВАЗ-2114']
+    all_models = ['2101', '2101-07', '2105', '2105-07', '2106', '2107', '2108', '2108-99', '2108-15', '2109', '2110-12', '2112', '2113', '21213',
+                  '1118', '2110-2115', '2110-2170', '2170-72', '2121', '2131', '2121-213', '2170', '2180', '2190',
+                  'Калина', 'Kalina', 'Приора', 'Priora', 'Vesta', 'Нива', 'Niva', '4x4', 'Urban', '2114']
+    model = 'ВАЗ-'
+    start_point = text.find(model[:-1]) + 4
+    i = 0
+    while text[start_point + i: start_point + 1 + i].isnumeric():
+        model += text[start_point + i]
+        i += 1
+    text_out_model = model
+    for elem in all_models:
+        if elem in text and elem not in model:
+            if len(model) < 5:
+                text_out_model += ' ' + elem
+            else:
+                text_out_model += ', ' + elem
+    return text_out_model
 
 
 class Product(Item):
@@ -71,7 +75,9 @@ class Product(Item):
         input_processor=MapCompose(remove_quotes)
         )
     producer = Field()
-    model_auto = Field()
+    model_auto = Field(
+        input_processor=MapCompose(sort_from_model)
+        )
     navigation_categories = Field(
         input_processor=MapCompose(database_distribution)
         )
